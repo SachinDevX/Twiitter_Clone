@@ -1,15 +1,19 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'Sign_Up.dart';
+import 'package:provider/provider.dart';
+import '../services/auth_service.dart';
+import '../../home/screens/home_screen.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -18,6 +22,31 @@ class _HomeScreenState extends State<HomeScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _signIn() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all fields')),
+      );
+      return;
+    }
+
+    final result = await context.read<AuthService>().signInWithEmail(
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+    );
+
+    if (result == 'success') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result)),
+      );
+    }
   }
 
   @override
@@ -84,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 20),
                 RichText(
                   text: TextSpan(
-                    text: "Already have an account? ",
+                    text: "Don't have an account? ",
                     style: const TextStyle(color: Colors.grey,
                       fontSize: 16,),
 
@@ -96,7 +125,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
-                        recognizer: TapGestureRecognizer()..onTap = () {},
+                        recognizer: TapGestureRecognizer()..onTap = () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SignUpScreen(),
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -105,9 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: ElevatedButton(
-                    onPressed: () {
-                      // Add login logic here
-                    },
+                    onPressed: context.watch<AuthService>().isLoading ? null : _signIn,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       foregroundColor: Colors.black,
@@ -119,13 +153,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         vertical: 10,
                       ),
                     ),
-                    child: const Text(
-                      'Done',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    child: context.watch<AuthService>().isLoading
+                      ? const CircularProgressIndicator(color: Colors.black)
+                      : const Text('Sign In'),
                   ),
                 ),
               ],
