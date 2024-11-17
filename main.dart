@@ -1,9 +1,21 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'features/auth/screens/home_screen.dart';
+import 'package:provider/provider.dart';
+import 'features/auth/services/auth_service.dart';
+import 'features/auth/screens/Sign_Up.dart';
+import 'firebase_options.dart';
 
-
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    print('Firebase initialization error: $e');
+  }
+  
   runApp(const MyApp());
 }
 
@@ -12,10 +24,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Twitter Clone',
-      theme: ThemeData.dark(),
-      home: const HomeScreen(), // Use the correct HomeScreen
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => AuthService(),
+          lazy: false,
+        ),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Twitter Clone',
+        theme: ThemeData.dark(),
+        home: const SignUpScreen(),
+      ),
     );
   }
 }
