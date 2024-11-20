@@ -1,10 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:twitter/features/auth/screens/Login_screen.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 import '../../home/screens/home_screen.dart';
+import 'Login_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -26,8 +26,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Future<void> _signUp() async {
-    print('Starting sign up process...');
-
     setState(() {
       _isLoading = true;
     });
@@ -37,8 +35,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
           password: _passwordController.text,
         );
 
-    print('Sign up result: $result');
-
     setState(() {
       _isLoading = false;
     });
@@ -46,14 +42,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (!mounted) return;
 
     if (result == 'success') {
-      print('Navigation to HomeScreen...');
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => const HomeScreen(),
         ),
       );
     } else {
-      print('Showing error: $result');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(result),
@@ -80,26 +74,46 @@ class _SignUpScreenState extends State<SignUpScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: [
-                // Text field 1
+                // Email TextField
                 TextField(
                   controller: _emailController,
-                  obscureText: false,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Email',
-
+                    hintStyle: const TextStyle(color: Colors.grey),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.blue, width: 2),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    contentPadding: const EdgeInsets.all(16),
                   ),
                 ),
                 const SizedBox(height: 25),
-                // Text field 2
+
+                // Password TextField
                 TextField(
                   controller: _passwordController,
                   obscureText: true,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Password',
+                    hintStyle: const TextStyle(color: Colors.grey),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.blue, width: 2),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    contentPadding: const EdgeInsets.all(16),
                   ),
                 ),
                 const SizedBox(height: 40),
-                // Button
+
+                // Sign Up Button
                 Align(
                   alignment: Alignment.topRight,
                   child: ElevatedButton(
@@ -111,18 +125,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       minimumSize: const Size(120, 50),
                     ),
-                    child: _isLoading 
-                      ? const CircularProgressIndicator(color: Colors.black)
-                      : const Text(
-                        'Sign Up',
-                        style: TextStyle(
-                          fontSize: 18,
-                        ),
-                      ),
+                    child: _isLoading
+                        ? const CircularProgressIndicator(color: Colors.black)
+                        : const Text(
+                            'Sign Up',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                            ),
+                          ),
                   ),
                 ),
                 const SizedBox(height: 40),
-                // Rich text
+
+                // Already have an account? Sign In
                 RichText(
                   text: TextSpan(
                     text: "Already have an account? ",
@@ -138,14 +154,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
-                        recognizer: TapGestureRecognizer()..onTap = () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const LoginScreen(),
-                            ),
-                          );
-                        },
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const LoginScreen(),
+                              ),
+                            );
+                          },
                       ),
                     ],
                   ),
