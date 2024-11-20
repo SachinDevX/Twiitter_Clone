@@ -16,6 +16,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -33,6 +34,9 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
 
+      // Show loading state
+      setState(() => _isLoading = true);
+
       final result = await context.read<AuthService>().signInWithEmail(
         email: _emailController.text.trim(),
         password: _passwordController.text,
@@ -40,10 +44,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (!mounted) return;
 
+      // Hide loading state
+      setState(() => _isLoading = false);
+
       if (result == 'success') {
-        Navigator.of(context).pushAndRemoveUntil(
+        Navigator.pushReplacement(
+          context,
           MaterialPageRoute(builder: (context) => const HomeScreen()),
-          (route) => false,
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -51,6 +58,9 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     } catch (e) {
+      // Hide loading state
+      setState(() => _isLoading = false);
+      
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: ${e.toString()}')),
       );
@@ -74,50 +84,57 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 50,
                 ),
                 const SizedBox(height: 30),
-                TextField(
-                  controller: _emailController,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
-                    hintText: 'Email',
-                    hintStyle: TextStyle(color: Colors.grey),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.white,
-                        width: 1,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.lightBlueAccent,
-                        width: 2,
-                      ),
-                    ),
-                    contentPadding: EdgeInsets.all(20),
-                  ),
-                ),
+                
                 const SizedBox(height: 20),
                 TextField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
-                    hintText: 'Password',
-                    hintStyle: TextStyle(color: Colors.grey),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.white,
-                        width: 1,
+                    controller: _emailController,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: const InputDecoration(
+                      hintText: 'Email',
+                      hintStyle: TextStyle(color: Colors.grey),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.white,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(25.0)), // Circular border
                       ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.lightBlueAccent,
-                        width: 2,
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.lightBlueAccent,
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(25.0)), // Circular border
                       ),
+                      contentPadding: EdgeInsets.all(20),
                     ),
-                    contentPadding: EdgeInsets.all(20),
                   ),
-                ),
+const SizedBox(height: 20),
+TextField(
+  controller: _passwordController,
+  obscureText: true,
+  style: const TextStyle(color: Colors.white),
+  decoration: const InputDecoration(
+    hintText: 'Password',
+    hintStyle: TextStyle(color: Colors.grey),
+    enabledBorder: OutlineInputBorder(
+      borderSide: BorderSide(
+        color: Colors.white,
+        width: 1,
+      ),
+      borderRadius: BorderRadius.all(Radius.circular(25.0)), // Circular border
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderSide: BorderSide(
+        color: Colors.lightBlueAccent,
+        width: 2,
+      ),
+      borderRadius: BorderRadius.all(Radius.circular(25.0)), // Circular border
+    ),
+    contentPadding: EdgeInsets.all(20),
+  ),
+),
+
                 const SizedBox(height: 20),
                 RichText(
                   text: TextSpan(
