@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:twitter/features/auth/screens/login_screen.dart';
 import 'features/auth/services/auth_service.dart';
 import 'features/auth/screens/Sign_Up.dart';
 import 'firebase_options.dart';
@@ -35,7 +36,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Twitter Clone',
         theme: ThemeData.dark(),
-        home: const SignUpScreen(),
+        home: const LoginScreen(),
       ),
     );
   }
